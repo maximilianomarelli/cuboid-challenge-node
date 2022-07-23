@@ -196,9 +196,17 @@ describe('cuboid update', () => {
     );
   });
 
-  it('should succeed to update the cuboid', () => {
+  it('should succeed to update the cuboid', async () => {
     const [newWidth, newHeight, newDepth] = [5, 5, 5];
-    const response = { body: {} as Cuboid, status: HttpStatus.OK };
+
+    cuboid.width = newWidth;
+    cuboid.height = newHeight;
+    cuboid.depth = newDepth;
+
+    const response = await request(server)
+      .patch('/cuboids/' + cuboid.id)
+      .send(cuboid);
+    // eslint-disable-next-line require-atomic-updates
     cuboid = response.body;
 
     expect(response.status).toBe(HttpStatus.OK);
@@ -208,12 +216,18 @@ describe('cuboid update', () => {
     expect(cuboid.bag?.id).toBe(bag.id);
   });
 
-  it('should fail to update if insufficient capacity and return 422 status code', () => {
+  it('should fail to update if insufficient capacity and return 422 status code', async () => {
     const [newWidth, newHeight, newDepth] = [6, 6, 6];
-    const response = {
-      body: {} as Cuboid,
-      status: HttpStatus.UNPROCESSABLE_ENTITY,
-    };
+
+    cuboid.width = newWidth;
+    cuboid.height = newHeight;
+    cuboid.depth = newDepth;
+
+    const response = await request(server)
+      .patch('/cuboids/' + cuboid.id)
+      .send(cuboid);
+    // eslint-disable-next-line require-atomic-updates
+    cuboid = response.body;
 
     expect(response.status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
     expect(response.body.width).not.toBe(newWidth);

@@ -9,15 +9,22 @@ export class Cuboid extends Base {
   depth!: number;
   bagId?: Id;
   bag!: Bag;
-  volume!: number;
 
   static tableName = 'cuboids';
+
+  get volume(): number {
+    return this.width * this.height * this.depth;
+  }
+
+  static get virtualAttributes(): string[] {
+    return ['volume'];
+  }
 
   static get relationMappings(): RelationMappings {
     return {
       bag: {
         relation: Base.BelongsToOneRelation,
-        modelClass: 'Bag',
+        modelClass: Bag,
         join: {
           from: 'cuboids.bagId',
           to: 'bags.id',
